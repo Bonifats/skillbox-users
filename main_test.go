@@ -5,8 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/go-chi/chi/v5"
+	"log"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -66,10 +68,23 @@ func TestUserDelete(t *testing.T) {
 func makeRequest(method, url string, body interface{}) *httptest.ResponseRecorder {
 	router := chi.NewRouter()
 
-	fmt.Println("http://127.0.0.1" + url)
+	fmt.Println("localhost" + url)
 
-	requestBody, _ := json.Marshal(body)
-	request, _ := http.NewRequest(method, "http://127.0.0.1"+url, bytes.NewBuffer(requestBody))
+	requestBody, err := json.Marshal(body)
+	if err != nil {
+		log.Println(err)
+		os.Exit(1)
+	}
+
+	fmt.Println(requestBody)
+
+	request, err := http.NewRequest(method, "http://localhost"+url, bytes.NewBuffer(requestBody))
+	if err != nil {
+		log.Println(err)
+		os.Exit(1)
+	}
+
+	fmt.Println(request.Header)
 
 	writer := httptest.NewRecorder()
 	router.ServeHTTP(writer, request)
