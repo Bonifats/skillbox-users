@@ -1,4 +1,13 @@
-Создание первого пользователя:
+Для запуска нужен Docker Desktop
+
+Команды:
+* make dev-up-build - собирает и стартует
+* make dev-up-down - останавливает и стартует
+* make dev-stop - останаваливает
+
+
+Запросы:
+* Создание первого пользователя:
 ``
 curl --location 'http://127.0.0.1/create' \
 --header 'Content-Type: application/json' \
@@ -8,7 +17,7 @@ curl --location 'http://127.0.0.1/create' \
 }'
 ``
 
-Создание второго пользователя:
+* Создание второго пользователя:
 ``
 curl --location 'http://127.0.0.1/create' \
 --header 'Content-Type: application/json' \
@@ -18,7 +27,7 @@ curl --location 'http://127.0.0.1/create' \
 }'
 ``
 
-Связывание пользователей:
+* Связывание пользователей:
 ``
 curl --location 'http://127.0.0.1/make_friends' \
 --header 'Content-Type: application/json' \
@@ -28,7 +37,7 @@ curl --location 'http://127.0.0.1/make_friends' \
 }'
 ``
 
-Удаление пользователя:
+* Удаление пользователя:
 ``
 curl --location --request DELETE 'http://127.0.0.1/user' \
 --header 'Content-Type: application/json' \
@@ -37,7 +46,7 @@ curl --location --request DELETE 'http://127.0.0.1/user' \
 }'
 ``
 
-Обновление пользователя:
+* Обновление пользователя:
 ``
 curl --location --request PUT 'http://127.0.0.1/1' \
 --header 'Content-Type: application/json' \
@@ -47,7 +56,7 @@ curl --location --request PUT 'http://127.0.0.1/1' \
 }'
 ``
 
-Получение списка друзей пользователя:
+* Получение списка друзей пользователя:
 ``
 curl --location 'http://127.0.0.1/friends/2'
 ``
