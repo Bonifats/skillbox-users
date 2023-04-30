@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"fmt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log"
@@ -19,10 +18,10 @@ func NewStorage() Storage {
 	dsn := "host=skillbox-users-db port=5432 user=admin dbname=api sslmode=disable password=admin"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		fmt.Println("Cannot connect to postgres database")
-		//log.Fatal("This is the error:", err)
+		log.Println("Cannot connect to postgres database")
+		log.Fatal("This is the error:", err)
 	} else {
-		fmt.Println("We are connected to the postgres database")
+		log.Println("We are connected to the postgres database")
 	}
 
 	err = db.Debug().Migrator().DropTable(&pUser.User{}, &pFriends.Friends{})

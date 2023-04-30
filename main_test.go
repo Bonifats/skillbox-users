@@ -3,11 +3,9 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
-	"github.com/go-chi/chi/v5"
+	"io"
 	"log"
 	"net/http"
-	"net/http/httptest"
 	"os"
 	"testing"
 
@@ -26,8 +24,8 @@ func TestUserCreate(t *testing.T) {
 			Age:  27,
 		},
 	} {
-		writer := makeRequest("POST", "/create", testUser)
-		assert.Equal(t, http.StatusCreated, writer.Code)
+		response := makeRequest("POST", "/create", testUser)
+		assert.Equal(t, http.StatusCreated, response.StatusCode)
 	}
 }
 
@@ -37,8 +35,8 @@ func TestUserUpdate(t *testing.T) {
 		Age:  29,
 	}
 
-	writer := makeRequest("PUT", "/1", user)
-	assert.Equal(t, http.StatusOK, writer.Code)
+	response := makeRequest("PUT", "/1", user)
+	assert.Equal(t, http.StatusOK, response.StatusCode)
 }
 
 func TestUserAttach(t *testing.T) {
@@ -47,13 +45,13 @@ func TestUserAttach(t *testing.T) {
 		TargetId: 2,
 	}
 
-	writer := makeRequest("POST", "/make_friends", attach)
-	assert.Equal(t, http.StatusOK, writer.Code)
+	response := makeRequest("POST", "/make_friends", attach)
+	assert.Equal(t, http.StatusOK, response.StatusCode)
 }
 
 func TestUserGetFriends(t *testing.T) {
-	writer := makeRequest("GET", "/friends/1", nil)
-	assert.Equal(t, http.StatusOK, writer.Code)
+	response := makeRequest("GET", "/friends/1", nil)
+	assert.Equal(t, http.StatusOK, response.StatusCode)
 }
 
 func TestUserDelete(t *testing.T) {
@@ -61,33 +59,42 @@ func TestUserDelete(t *testing.T) {
 		Id: 2,
 	}
 
-	writer := makeRequest("DELETE", "/user", deleteId)
-	assert.Equal(t, http.StatusOK, writer.Code)
+	response := makeRequest("DELETE", "/user", deleteId)
+	assert.Equal(t, http.StatusOK, response.StatusCode)
 }
 
-func makeRequest(method, url string, body interface{}) *httptest.ResponseRecorder {
-	router := chi.NewRouter()
-
-	fmt.Println("localhost" + url)
-
+func makeRequest(method, url string, body interface{}) *http.Response {
 	requestBody, err := json.Marshal(body)
 	if err != nil {
 		log.Println(err)
 		os.Exit(1)
 	}
 
-	fmt.Println(requestBody)
-
-	request, err := http.NewRequest(method, "http://localhost"+url, bytes.NewBuffer(requestBody))
+	request, err := http.NewRequest(method, "http://127.0.0.1"+url, bytes.NewBuffer(requestBody))
 	if err != nil {
 		log.Println(err)
 		os.Exit(1)
 	}
 
-	fmt.Println(request.Header)
+	response, err := http.DefaultClient.Do(request)
+	if err != nil {
+		log.Println(err)
+		os.Exit(1)
+	}
 
-	writer := httptest.NewRecorder()
-	router.ServeHTTP(writer, request)
+	responseBody, err := io.ReadAll(response.Body)
+	if err != nil {
+		log.Println(err)
+		os.Exit(1)
+	}
+	// close response body
+	err = response.Body.Close()
+	if err != nil {
+		log.Println(err)
+		os.Exit(1)
+	}
 
-	return writer
+	log.Println(string(responseBody))
+
+	return response
 }

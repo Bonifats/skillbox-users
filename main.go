@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"os"
 	"students/pkg/app"
 )
@@ -15,7 +15,7 @@ func main() {
 		httpPort = "8081"
 	}
 
-	fmt.Println("Run port:", httpPort)
+	log.Println("Run port:", httpPort)
 
 	a.Run(httpPort)
 }
